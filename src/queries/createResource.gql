@@ -1,0 +1,5 @@
+mutation CreateBookableResource($planId: Int!, $x: Float!, $y: Float!) {
+  createResource(input: { planId: $planId, x: $x, y: $y, kind: WORKSPACE }) {
+    id
+  }
+}

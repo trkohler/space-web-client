@@ -1,0 +1,10 @@
+query PlanAndResources{
+    plan(id: 1) {
+      resources {
+        coordinate {
+          x
+          y
+        }
+      }
+    }
+  }

@@ -1,0 +1,3 @@
+mutation DeleteBookableResource($planId: Int!, $x: Float!, $y: Float!) {
+  removeResource(input: { planId: $planId, x: $x, y: $y })
+}
