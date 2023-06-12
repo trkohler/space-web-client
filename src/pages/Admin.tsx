@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { loader } from "graphql.macro";
 import { FloorPlan } from "../components/FloorPlan";
+import { Layout } from "../components/Layout";
 
 const deleteResourceMutation = loader("../queries/deleteResource.gql");
 const queryPlanAndResources = loader("../queries/getPlanAndResources.gql");
@@ -34,13 +35,13 @@ export const AdminPage = () => {
   }
 
   return (
-    <div className="App">
+    <Layout>
       
       <FloorPlan.Admin
         coordinates={coordinates}
         setCoordinates={setCoordinates}
       />
       <button onClick={deleteLastMark}>Click me to remove last mark</button>
-    </div>
+      </Layout>
   );
 };
