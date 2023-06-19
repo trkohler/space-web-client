@@ -3,11 +3,14 @@ import React, { useEffect, useState } from "react";
 import { loader } from "graphql.macro";
 import { FloorPlan } from "../components/FloorPlan";
 import { Layout } from "../components/Layout";
+import { useAuth } from "../hooks/auth";
 
 const deleteResourceMutation = loader("../queries/deleteResource.gql");
 const queryPlanAndResources = loader("../queries/getPlanAndResources.gql");
 
 export const AdminPage = () => {
+  const { profile } = useAuth();
+
   let [coordinates, setCoordinates] = useState<{ x: number; y: number }[]>([]);
   let { data } = useQuery(queryPlanAndResources);
 
@@ -36,12 +39,17 @@ export const AdminPage = () => {
 
   return (
     <Layout>
-      
+      {profile && (
+        <div>
+          <h1>Admin Page</h1>
+          <p>Hi {profile.name}!</p>
+        </div>
+      )}
       <FloorPlan.Admin
         coordinates={coordinates}
         setCoordinates={setCoordinates}
       />
       <button onClick={deleteLastMark}>Click me to remove last mark</button>
-      </Layout>
+    </Layout>
   );
 };
