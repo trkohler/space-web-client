@@ -1,13 +1,8 @@
-import {
-  CredentialResponse,
-  GoogleLogin,
-  googleLogout,
-} from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import { Layout } from "../components/Layout";
-import { useContext, useEffect, useState } from "react";
-import jwt_decode from "jwt-decode";
 import { useAuth } from "../hooks/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 type UserProfile = {
   picture: string;
@@ -17,31 +12,28 @@ type UserProfile = {
 };
 
 export const Login = () => {
-  const { onLogin, onLogout, profile } = useAuth();
-  const [credentials, setCredentials] = useState<CredentialResponse | null>(
-    null
-  );
+  const { onLogin } = useAuth();
+  const [ showGoogleLogin, setShowGoogleLogin ] = useState(false);
 
-  const logOut = () => {
-    onLogout();
-  };
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      onLogin({ credential: token });
+    } else {
+      setShowGoogleLogin(true);
+    }
+  }, [onLogin]);
 
   return (
     <Layout>
       <div>
         <h1>Login</h1>
-        {profile ? (
-          <>
-            <p>you are logged in as {profile.name}</p>
-          </>
-        ) : (
-          <GoogleLogin
-            onSuccess={onLogin}
-            useOneTap
-            auto_select
-            theme="filled_black"
-          />
-        )}
+        {showGoogleLogin && <GoogleLogin
+          onSuccess={onLogin}
+          useOneTap
+          auto_select
+          theme="filled_black"
+        />}
         <Link to="/admin">Admin</Link> <br />
         <Link to="/choose_building">Choose building</Link>
       </div>

@@ -1,0 +1,9 @@
+mutation Registration($token: String!) {
+  register(userInput: {
+    googleJwtToken: $token
+  }) {
+    id
+    displayName
+    email
+  }
+}

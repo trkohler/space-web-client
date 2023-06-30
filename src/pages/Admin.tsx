@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from "@apollo/client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { loader } from "graphql.macro";
 import { FloorPlan } from "../components/FloorPlan";
 import { Layout } from "../components/Layout";
 import { useAuth } from "../hooks/auth";
+import { AuthContext } from "..";
 
 const deleteResourceMutation = loader("../queries/deleteResource.gql");
 const queryPlanAndResources = loader("../queries/getPlanAndResources.gql");
@@ -42,7 +43,7 @@ export const AdminPage = () => {
       {profile && (
         <div>
           <h1>Admin Page</h1>
-          <p>Hi {profile.name}!</p>
+          <p>Hi {profile.displayName}!</p>
         </div>
       )}
       <FloorPlan.Admin

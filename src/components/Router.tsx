@@ -5,11 +5,13 @@ import { Login } from "../pages/Login";
 import { AdminPage } from "../pages/Admin";
 import { ChooseBuilding } from "../pages/ChooseBuilding";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { RegistrationPage } from "../pages/Registration";
 
 export const Router = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/registration/*" element={<RegistrationPage />} />
       <Route
         index
         element={
@@ -34,6 +36,7 @@ export const Router = () => {
           </ProtectedRoute>
         }
       />
+      
     </Routes>
   );
 };

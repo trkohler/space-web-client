@@ -1,52 +1,58 @@
 import { googleLogout } from "@react-oauth/google";
-import { useEffect, useState } from "react";
-import jwt_decode from "jwt-decode";
 import { AuthContext } from "..";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { loader } from "graphql.macro";
+import { useEffect, useState } from "react";
 
 type UserProfile = {
-  picture: string;
-  name: string;
+  displayName: string;
   email: string;
-  email_verified: boolean;
+  role?: "super-admin" | "admin" | "user";
 };
 
+const loginMutation = loader("../queries/login.gql");
+
 export const AuthProvider = ({ children }) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-  const [credentials, setCredentials] = useState(null);
-  const [profile, setProfile] = useState<UserProfile>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [login, { error }] = useMutation(loginMutation);
+
+  if (error) {
+    console.log(error);
+  }
 
   const handleLogin = async (codeResponse) => {
-    setCredentials(codeResponse);
-    console.log(location.state)
-    const origin = location.state?.from?.pathname || '/admin'; // TODO: should be changed later according to user roles
-    console.log(origin)
-    navigate(origin);
-  };
+    const { credential } = codeResponse;
+    sessionStorage.setItem("token", credential);
+    console.log("credential", credential);
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (credentials) {
-        const decoded = jwt_decode<UserProfile>(credentials.credential);
-        setProfile(decoded);
-
-        console.log(`token should be set`);
+    login({
+      onCompleted: (data) => {
+        const {
+          login: { ...user },
+        } = data;
+        setProfile(user);
+        const origin = location.state?.from?.pathname || "/admin"; // TODO: should be changed later according to user roles
+        navigate(origin, { replace: true });
+      },
+      onError: (error) => {
+        console.log(error);
       }
-    }
-    fetchProfile();
-  }, [credentials]);
+  
+    });
+  };
 
   const handleLogout = () => {
     googleLogout();
-    setCredentials(null);
+    sessionStorage.removeItem("token");
   };
 
   const value = {
-    credentials,
+    profile,
     onLogin: handleLogin,
     onLogout: handleLogout,
-    profile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

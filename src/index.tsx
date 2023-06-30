@@ -2,13 +2,35 @@ import React, { createContext } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+} from "@apollo/client";
 import { BrowserRouter } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./components/AuthProvider";
+import { setContext } from "@apollo/client/link/context";
+
+const httpLink = createHttpLink({
+  uri: "http://localhost:8000/api/graphql",
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = sessionStorage.getItem("token");
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
 
 const client = new ApolloClient({
-  uri: "http://localhost:8080/api/graphql",
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 
@@ -21,15 +43,15 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <BrowserRouter>
-  <AuthProvider>
-  <GoogleOAuthProvider clientId="612437101924-59mhs9gv5j3m0lhcrq97pj7tjhmnm4b7.apps.googleusercontent.com">
-    <React.StrictMode>
-      <ApolloProvider client={client}>
-        <App />
-      </ApolloProvider>
-    </React.StrictMode>
-  </GoogleOAuthProvider>
-  </AuthProvider>
+    <ApolloProvider client={client}>
+      <AuthProvider>
+        <GoogleOAuthProvider clientId="612437101924-59mhs9gv5j3m0lhcrq97pj7tjhmnm4b7.apps.googleusercontent.com">
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        </GoogleOAuthProvider>
+      </AuthProvider>
+    </ApolloProvider>
   </BrowserRouter>
 );
 
