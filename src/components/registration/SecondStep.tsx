@@ -6,16 +6,12 @@ type FormValues = {
   spaceName: string;
 };
 
-export const SecondStep = () => {
+export const SecondStep = ({ setSpaceName }) => {
   const { register, handleSubmit } = useForm<FormValues>();
-  const navigate = useNavigate();
 
   const onSubmit = (data) => {
-    console.log(data);
-    // persist spaceName in local storage
     const { spaceName } = data;
-    localStorage.setItem("spaceName", spaceName);
-    navigate("/admin", { state: { from: "/registration/second" }})
+    setSpaceName(spaceName);
   };
 
   return (

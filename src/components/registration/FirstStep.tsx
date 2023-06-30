@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { useAuth } from "../../hooks/auth";
 import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
 
-export const FirstStep = (props) => {
-  const { onLogin } = useAuth();
-  
-
+export const FirstStep = ({ setToken }) => {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -14,7 +13,9 @@ export const FirstStep = (props) => {
       <br />
       <GoogleLogin
         onSuccess={(response) => {
-          onLogin(response, "/registration/second");
+          setToken(response.credential);
+          sessionStorage.setItem("token", response.credential);
+          navigate("/registration/second");
         }}
         useOneTap
         auto_select

@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     profile,
+    setProfile,
     onLogin: handleLogin,
     onLogout: handleLogout,
   };
