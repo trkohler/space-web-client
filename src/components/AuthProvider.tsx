@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
   const handleLogin = async (codeResponse) => {
     const { credential } = codeResponse;
     sessionStorage.setItem("token", credential);
-    console.log("credential", credential);
 
     login({
       onCompleted: (data) => {
@@ -39,14 +38,15 @@ export const AuthProvider = ({ children }) => {
       },
       onError: (error) => {
         console.log(error);
-      }
-  
+      },
     });
   };
 
   const handleLogout = () => {
     googleLogout();
     sessionStorage.removeItem("token");
+    setProfile(null);
+    navigate("/login", { replace: true });
   };
 
   const value = {
